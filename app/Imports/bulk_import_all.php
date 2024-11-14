@@ -136,7 +136,7 @@ class bulk_import_all implements ToModel, WithHeadingRow, WithValidation, SkipsE
                 "women"             => array_fill_keys($districts,null),
                 "disable"           => array_fill_keys($districts,null),
                 "item_name"         => array_fill_keys($districts,null),
-                "revised_outlay"    => array_fill_keys($districts,null),
+                "resvised_outlay"    => array_fill_keys($districts,null),
             ];  
 
             $json_data = json_encode($data);
@@ -163,30 +163,29 @@ class bulk_import_all implements ToModel, WithHeadingRow, WithValidation, SkipsE
                 'q_4_data' => null,
             ];
             
-            // Prepare the update array
-            switch ($quarter_val) {
-                case 1:
-                    $update_q_Data['q_1_data'] = $json_data_val;
-                    $new_array_for_quarter['q_1_data'] = $json_data_val;
-                    break;
-                case 2:
-                    $update_q_Data['q_2_data'] = $json_data_val;
-                    $new_array_for_quarter['q_2_data'] = $json_data_val;
-                    break;
-                case 3:
-                    $update_q_Data['q_3_data'] = $json_data_val;
-                    $new_array_for_quarter['q_3_data'] = $json_data_val;
-                    break;
-                case 4:
-                    $update_q_Data['q_4_data'] = $json_data_val;
-                    $new_array_for_quarter['q_4_data'] = $json_data_val;
-                    break;
-            }
 
-             
-            // echo "<pre> Fin Year : "; print_r($update_q_Data);
-            // dd($json_data_val);
-            
+    // Prepare the update array
+        switch ($quarter_val) {
+            case 1:
+                $update_q_Data['q_1_data'] = json_encode([json_decode($json_data_val, true)]);
+                $new_array_for_quarter['q_1_data'] = json_encode([json_decode($json_data_val, true)]);
+                break;
+            case 2:
+                $update_q_Data['q_2_data'] = json_encode([json_decode($json_data_val, true)]);
+                $new_array_for_quarter['q_2_data'] = json_encode([json_decode($json_data_val, true)]);
+                break;
+            case 3:
+                $update_q_Data['q_3_data'] = json_encode([json_decode($json_data_val, true)]);
+                $new_array_for_quarter['q_3_data'] = json_encode([json_decode($json_data_val, true)]);
+                break;
+            case 4:
+                $update_q_Data['q_4_data'] = json_encode([json_decode($json_data_val, true)]);
+                $new_array_for_quarter['q_4_data'] = json_encode([json_decode($json_data_val, true)]);
+                break;
+        }
+
+        // dd($update_q_Data);
+
         $allEmpty = true;
         foreach ($row as $key => $value) {
             if (!empty($value)) {
@@ -276,15 +275,12 @@ class bulk_import_all implements ToModel, WithHeadingRow, WithValidation, SkipsE
         $get_majorhead_id = $majorhead_id->id ?? '';
         $get_schememaster_id = $schememaster_id->id ?? '';
         $get_soemaster_id_id = $soemaster_id->id ?? '';
-        // dd($get_dep_id);
-
-
-        // dd($department_id->id);
+      
         // Step 2: Check if the given fin_year_id exists in the retrieved values
         $quarter_data_all = soe_budget_distribution::where('fin_year_id', $get_fin_yr_id)->where('plan_id', $get_plan_id)->where('department_id', $get_dep_id)->where('majorhead_id', $get_majorhead_id)->where('scheme_id', $get_schememaster_id)->where('soe_id', $get_soemaster_id_id)->first();
         
     if($quarter_data_all){ 
-
+        
         $q_1_data_db = $quarter_data_all->q_1_data ?? null;        
         $q_2_data_db = $quarter_data_all->q_2_data ?? null;
         $q_3_data_db = $quarter_data_all->q_3_data ?? null;
@@ -322,10 +318,7 @@ class bulk_import_all implements ToModel, WithHeadingRow, WithValidation, SkipsE
             ]);
             $budget_allocation->save();
             
-           
-            // echo '<pre>'; print_r($update_q_Data); 
-            // dd($update_q_Data);
-            // Budget distribution table 
+
             $budget_distribution = new soe_budget_distribution([
                 'department_id' => $department_id->id,
                 'majorhead_id'  => $majorhead_id->id,

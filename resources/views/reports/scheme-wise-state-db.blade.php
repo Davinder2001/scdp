@@ -253,7 +253,7 @@
                                                                         $soe_revised_outlay = App\Models\Soe_budget_distribution::where('soe_id',$soevalue->id)->get();
                                                                         $arr = [];
                                                                         $exp_arr = [];
-                                                                        dd($exp_arr);
+                                                                        // dd($exp_arr);
                                                                         foreach($soe_revised_outlay as $soe_revised_outlay_key => $soe_revised_outlay_value)
                                                                         {
                                                                             if($soe_revised_outlay_value->q_1_data)
