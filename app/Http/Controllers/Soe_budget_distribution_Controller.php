@@ -186,49 +186,66 @@ class Soe_budget_distribution_Controller extends Controller
     }
     
 
-    public function store(Request $request){
+        public function store(Request $request)
+        {
+            // Validate the request data
+            $validator = Validator::make($request->all(), [
+                'department_id' => 'required',
+                'majorhead_id' => 'required',
+                'scheme_id' => 'required',
+                'soe_id' => 'required',
+                'fin_year_id' => 'required',
+                'type' => 'required',
+            ]);
 
-        //dd($request->all());
-        $validate = Validator::make($request->all(), [
-            'department_id' => 'required',
-            'majorhead_id' => 'required',
-            'scheme_id' => 'required',
-            'soe_id' => 'required',
-            'fin_year_id' => 'required',
-            'type' => 'required',
-            
-            
-        ]);
+            // Handle validation failures
+            if ($validator->fails()) {
+                return redirect()->back()
+                    ->withErrors($validator)
+                    ->withInput(); // Retain the old input values
+            }
 
+            // Prepare the data to be stored
+            $data = [
+                'outlay' => $request->outlay,
+                'expenditure' => $request->expenditure,
+                'opercentage' => $request->opercentage,
+                'unit' => $request->unit,
+                'unit_measure' => $request->unit_measure,
+                'achievement' => $request->achievement,
+                'upercentage' => $request->upercentage,
+                'ben_total' => $request->ben_total,
+                'women' => $request->women,
+                'disable' => $request->disable,
+                'item_name' => $request->item_name,
+                'revised_outlay' => $request->outlay,
+            ];
 
+            try {
+                // Save the data
+                $schemeBudgetDistribution = new Soe_budget_distribution();
+                $schemeBudgetDistribution->department_id = $request->department_id;
+                $schemeBudgetDistribution->majorhead_id = $request->majorhead_id;
+                $schemeBudgetDistribution->scheme_id = $request->scheme_id;
+                $schemeBudgetDistribution->soe_id = $request->soe_id;
+                $schemeBudgetDistribution->fin_year_id = $request->fin_year_id;
+                $schemeBudgetDistribution->plan_id = $request->plan_id;
+                $schemeBudgetDistribution->data = json_encode($data);
 
-        $data=array('outlay'=>$request->outlay,'expenditure'=>$request->expenditure,'opercentage'=>$request->opercentage,'unit'=>$request->unit,'unit_measure'=>$request->unit_measure,'achievement'=>$request->achievement,'upercentage'=>$request->upercentage,'ben_total'=>$request->ben_total,'women'=>$request->women,'disable'=>$request->disable,'item_name'=>$request->item_name,'resvised_outlay'=>$request->outlay);
-       
-        if ($validate->fails()) {
-            return back()->withErrors($validate->errors())->withInput();
-        } else {
-               
-                
-
-                            $schemebudgetdistribution = new Soe_budget_distribution;
-                            $schemebudgetdistribution->department_id = $request->department_id;
-                            $schemebudgetdistribution->majorhead_id = $request->majorhead_id;
-                            $schemebudgetdistribution->scheme_id = $request->scheme_id;
-                            $schemebudgetdistribution->soe_id = $request->soe_id;
-                            $schemebudgetdistribution->fin_year_id = $request->fin_year_id;
-                            $schemebudgetdistribution->plan_id = $request->plan_id;
-                          
-                           
-                            $schemebudgetdistribution->data =json_encode($data);
-                           
-                            $res = $schemebudgetdistribution->save();
-
-                if($res=="true"){
+                if ($schemeBudgetDistribution->save()) {
                     return redirect()->route('soe-budget-distribution.index')
-                    ->with('success', 'Soe budget distributed successfully.');
+                        ->with('success', 'Soe budget distributed successfully.');
+                } else {
+                    throw new \Exception('Failed to save budget distribution');
                 }
+            } catch (\Exception $e) {
+                // Handle exceptions during the save operation
+                return redirect()->back()
+                    ->with('error', 'An error occurred: ' . $e->getMessage())
+                    ->withInput();
+            }
         }
-    }
+
 
     public function show($id){
         $soebudgetdistribution = Soe_budget_distribution::find($id);

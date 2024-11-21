@@ -331,8 +331,12 @@ input[type=number] {
                                 
                                             <!-- Previous and Next buttons -->
                                             <div class="btn-container table-nxt-prv" id="table-nxt-prv">
-                                                <button type="button" class="btn btn-success" id="prevBtn" onclick="navigateSection(-1)" style="display: none;">Previous</button>
-                                                <button type="button" class="btn btn-success" id="nextBtn" onclick="navigateSection(1)">Next</button>
+                                                <div>
+                                                    <button type="button" class="btn btn-success" id="prevBtn" onclick="navigateSection(-1)" style="display: none;">Previous</button>
+                                                </div>
+                                                <div>
+                                                    <button type="button" class="btn btn-success" id="nextBtn" onclick="navigateSection(1)">Next</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

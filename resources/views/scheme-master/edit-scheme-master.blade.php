@@ -74,11 +74,13 @@
                                             placeholder="Enter Scheme name">
                                     </div>
 									</div>
-                                    <div class="col-lg-3">
+                                    <div class="col-lg-12">
                                         <div class="form-group">
                                            <label for="scheme_name">Discription*</label>
-                                           <input type="textarea" class="form-control" id="scheme_description" name="scheme_description"
-                                               placeholder="Enter Scheme Discription">
+                                           <textarea id="scheme_description" name="scheme_description" placeholder="Enter Description" rows="4"></textarea>
+                                           <script>
+                                               CKEDITOR.replace('scheme_description');
+                                           </script>
                                        </div>
                                         </div>
                                 </div>

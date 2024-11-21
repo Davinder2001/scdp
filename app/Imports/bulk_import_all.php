@@ -64,7 +64,7 @@ class bulk_import_all implements ToModel, WithHeadingRow, WithValidation, SkipsE
         $fin_year = $_POST['fin_year'] ?? "";
         $quarter = $_POST['quarter'] ?? "";
         $plan_name =  $this->sheetName;
-
+        // dd($plan_name);
         $row = [
             'department_name'   => $row['department_name'] ?? "",
             'complete_head'     => $row['complete_head'] ?? "",
@@ -107,6 +107,9 @@ class bulk_import_all implements ToModel, WithHeadingRow, WithValidation, SkipsE
                 $row['una'] ?? "",
                 $row['undistri_buted'] ?? "",
             ];
+
+
+            
             
             // Retrieve district IDs from the database
             $districts = District::pluck('id')->toArray();
@@ -122,7 +125,7 @@ class bulk_import_all implements ToModel, WithHeadingRow, WithValidation, SkipsE
                     $outlay_row[$district] = ""; // Set a default value if $outlay_row_array[$index] is not set
                 }
             }
-
+            
             // Now $outlay_row_json will contain the JSON string you want, e.g. {"outlay":{"1":11,"2":12,...}}
             $data = [
                 "outlay"            => $outlay_row,
@@ -138,10 +141,11 @@ class bulk_import_all implements ToModel, WithHeadingRow, WithValidation, SkipsE
                 "item_name"         => array_fill_keys($districts,null),
                 "resvised_outlay"    => array_fill_keys($districts,null),
             ];  
+            
 
             $json_data = json_encode($data);
             
-
+            
             
             $validatedData = ([
                 'quarter'   => $quarter,
@@ -278,9 +282,8 @@ class bulk_import_all implements ToModel, WithHeadingRow, WithValidation, SkipsE
       
         // Step 2: Check if the given fin_year_id exists in the retrieved values
         $quarter_data_all = soe_budget_distribution::where('fin_year_id', $get_fin_yr_id)->where('plan_id', $get_plan_id)->where('department_id', $get_dep_id)->where('majorhead_id', $get_majorhead_id)->where('scheme_id', $get_schememaster_id)->where('soe_id', $get_soemaster_id_id)->first();
-        
-    if($quarter_data_all){ 
-        
+        if($quarter_data_all){ 
+            
         $q_1_data_db = $quarter_data_all->q_1_data ?? null;        
         $q_2_data_db = $quarter_data_all->q_2_data ?? null;
         $q_3_data_db = $quarter_data_all->q_3_data ?? null;

@@ -7,7 +7,36 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
+.ms-table-section { display: none; }
+    .ms-table-active { display: table-row-group; }
+    .ms-table-heading { display: table-row; }
+    .ms-table-hidden-heading { display: none; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    .btn-container {
+        text-align: right;
+        margin-top: 10px;
+    }
+    .btn-container button {
+        margin-left: 10px;
+    }
+    tr.total-allocation th:first-child {
+    display: block !important;
+}
+div#table-nxt-prv {
+    display: flex;
+    justify-content: space-between;
+}
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
@@ -191,33 +220,55 @@ input[type=number] {
                                     <div class="col-lg-12">
                                         <div class="form-group table-responsive">
                                              <table class="table table-bordered" name="district_outlay_tbl" id="district_outlay_tbl">
+                                                {{-- <thead>
+                                                    <tr class="ms-table-heading">
+                                                        <th rowspan="2">District</th>
+                                                        <th colspan="3" class="financial">Financial</th>
+                                                        <th colspan="5" class="physical">Physical Achievement</th>
+                                                        <th colspan="3" class="beneficiaries">Beneficiaries</th>
+                                                    </tr>
+                                                    <tr class="ms-table-heading">
+                                                        <th class="financial">Outlay</th>
+                                                        <th class="financial">Expenditure</th>
+                                                        <th class="financial">Percentage (%)</th>
+                                                        <th class="physical">Item Name</th>
+                                                        <th class="physical">Unit Of Measure</th>
+                                                        <th class="physical">Unit</th>
+                                                        <th class="physical">Achievement</th>
+                                                        <th class="physical">Percentage (%)</th>
+                                                        <th class="beneficiaries">Total</th>
+                                                        <th class="beneficiaries">Women (Out of Total)</th>
+                                                        <th class="beneficiaries">Disable (Out of total)</th>
+                                                    </tr>
+                                                </thead> --}}
                                                 <thead>
-                                                    <tr style="text-align: center;">
-                                                        <th>District</th>
-                                                        <th colspan="4">Financial</th>
-                                                        <th colspan="5">Physical Achievement</th>
-                                                        <th colspan="3">Beneficiaries</th>
+                                                    <tr class="ms-table-heading">
+                                                        <th rowspan="2">District</th>
+                                                        <th colspan="4" class="financial">Financial</th>
+                                                        <th colspan="5" class="physical">Physical Achievement</th>
+                                                        <th colspan="3" class="beneficiaries">Beneficiaries</th>
                                                         
                                                     </tr>
-                                                    <tr>
+                                                    <tr class="ms-table-heading">
                                                         <th></th>
-                                                        <th>Outlay</th>
-                                                        <th>Latest Revised Outlay</th>
-                                                        <th>Expenditure</th>
-                                                        <th>Percentage (%)</th>
-                                                        <th>Item Name</th>
-                                                        <th>Unit Of Measure</th>
-                                                        <th>Unit</th>
-                                                        <th>Achievement</th>
-                                                        <th>Percentage (%)</th>
-                                                        <th>Total</th>
-                                                        <th>Women (Out of Total )</th>
-                                                        <th>Disable (Out of total)</th>
+                                                        <th class="financial">Outlay</th>
+                                                        <th class="financial">Latest Revised Outlay</th>
+                                                        <th class="financial">Expenditure</th>
+                                                        <th class="financial">Percentage (%)</th>
+                                                        <th class="physical">Item Name</th>
+                                                        <th class="physical">Unit Of Measure</th>
+                                                        <th class="physical">Unit</th>
+                                                        <th class="physical">Achievement</th>
+                                                        <th class="physical">Percentage (%)</th>
+                                                        <th class="beneficiaries">Total</th>
+                                                        <th class="beneficiaries">Women (Out of Total )</th>
+                                                        <th class="beneficiaries">Disable (Out of total)</th>
                                                     </tr>
                                                 </thead>
-                                                <tbody name="outlayarr">
+                                                <tbody name="outlayarr" id="financial" class="ms-table-section">
                                                     @if (isset($districtlist))
                                                     @php
+                                                    // dd($$districtlist); 
                                                     $i = 0;
                                                         $outlay=0;
                                                         $expenditure=0;
@@ -235,13 +286,14 @@ input[type=number] {
                                                         <?php 
 
                                                         $i=$district->id;
-                                                    // DD($districtdata);
+
                                                         if(sizeof($districtdata['outlay'])==$i){
 
                                                             continue;
                                                         }
                                                         ?>
                                                         <tr>
+                                                            {{-- Financial Data Table --}}
                                                             <td>{{$district->district_name}}</td>
                                                             <td>
                                                                 <?php
@@ -300,6 +352,7 @@ input[type=number] {
                                                             </td>
                                                             <td>
                                                                 <?php
+                                                   
                                                                 if(!empty($districtdata['opercentage'][$i])) {
                                                                     $opercentage=$opercentage+$districtdata['opercentage'][$i];
                                                                     ?>
@@ -317,6 +370,15 @@ input[type=number] {
                                                                 }
                                                                 ?>
                                                             </td>
+                                                        </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                      
+                                                    <tbody name="outlayarr" id="physical" class="ms-table-section">
+                                                        <tr class="the tr">
+                                                            @foreach ($districtlist as $i => $district)
+                                                            {{-- Physical Achievement data table --}}
+                                                            <td>{{$district->district_name}}</td>
                                                             <td>
                                                                 <?php
                                                                 if(!empty($districtdata['item_name'][$i])) {
@@ -409,6 +471,15 @@ input[type=number] {
                                                                 }
                                                                 ?>
                                                             </td>
+                                                        </tr>
+                                                           @endforeach
+                                                        </tbody>
+                                                   
+                                                        <tbody name="outlayarr" id="beneficiaries" class="ms-table-section">
+                                                            @foreach ($districtlist as $i => $district)
+                                                        <tr>
+                                                            {{-- Beneficiaries data --}}
+                                                            <td>{{$district->district_name}}</td>
                                                             <td>
                                                                 <?php
                                                                 if(!empty($districtdata['ben_total'][$i])) {
@@ -467,16 +538,17 @@ input[type=number] {
                                                             </td>
                                                            
                                                         </tr>
-                                                        @endforeach
+                                                        @endforeach 
+                                                    </tbody>
   
                                                     
                                                        
-                                                        <tr>
+                                                    <tr class="ms-table-heading total-allocation">
                                                         <th>Total</th>
-                                                        <th>{{$outlay}}</th>
-                                                        <th>{{$resvised_outlay}}</th>
-                                                        <th>{{$expenditure}}</th>
-                                                        <th>
+                                                        <th class="financial">{{$outlay}}</th>
+                                                        <th class="financial">{{$resvised_outlay}}</th>
+                                                        <th class="financial">{{$expenditure}}</th>
+                                                        <th class="financial">
                                                             <?php 
                                                             $both_numbers = $resvised_outlay && $expenditure;
                                                             if($both_numbers){
@@ -495,11 +567,11 @@ input[type=number] {
                                                             
                                                             ?>
                                                         </th>
-                                                         <th></th> 
-                                                         <th></th>
-                                                        <th>{{$unit}}</th>
-                                                        <th>{{$achievement}}</th>
-                                                        <th>
+                                                         <th class="physical"></th> 
+                                                         <th class="physical"></th>
+                                                        <th class="physical">{{$unit}}</th>
+                                                        <th class="physical"> {{$achievement}}</th>
+                                                        <th class="physical">
                                                             <?php 
                                                             if($achievement != 0)
                                                             {
@@ -511,15 +583,24 @@ input[type=number] {
                                                             ?>
                                                             {{ number_format($count4, 2) }}
                                                         </th>
-                                                        <th>{{$ben_total}}</th>
-                                                        <th>{{$women}}</th>
-                                                        <th>{{$disable}}</th>
+                                                        <th class="beneficiaries">{{$ben_total}}</th>
+                                                        <th class="beneficiaries">{{$women}}</th>
+                                                        <th class="beneficiaries">{{$disable}}</th>
                                                     </tr>
                                                 @endif
                                                        
                                              
-                                                </tbody>
+                                           
                                             </table>
+                                             <!-- Previous and Next buttons -->
+                                                <div class="btn-container table-nxt-prv" id="table-nxt-prv">
+                                                    <div>
+                                                        <button type="button" class="btn btn-success" id="prevBtn" onclick="navigateSection(-1)" style="display: none;">Previous</button>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" class="btn btn-success" id="nextBtn" onclick="navigateSection(1)">Next</button>
+                                                    </div>
+                                                </div>
                                         </div>
                                     </div>
                                    
@@ -857,5 +938,71 @@ input[type=number] {
         
 
 
+    </script>
+    <script>
+        let currentSectionIndex = 0;
+        const sections = ['financial', 'physical', 'beneficiaries'];
+    
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.ms-table-section').forEach(section => {
+                section.style.display = 'none';
+            });
+    
+            // Hide all headings except District
+            document.querySelectorAll('.ms-table-heading th').forEach(heading => {
+                if (heading.textContent !== 'District') {
+                    heading.classList.add('ms-table-hidden-heading');
+                }
+            });
+    
+            // Show the selected section
+            document.getElementById(sectionId).style.display = 'table-row-group';
+    
+            // Show the heading for the selected section
+            document.querySelectorAll('.ms-table-heading .' + sectionId).forEach(heading => {
+                heading.classList.remove('ms-table-hidden-heading');
+            });
+    
+            // Update current section index
+            currentSectionIndex = sections.indexOf(sectionId);
+    
+            // Update button visibility based on section index
+            updateButtonVisibility();
+        }
+    
+        function navigateSection(direction) {
+            // Calculate next section index
+            currentSectionIndex += direction;
+            if (currentSectionIndex < 0) {
+                currentSectionIndex = sections.length - 1; // Wrap around to last section
+            } else if (currentSectionIndex >= sections.length) {
+                currentSectionIndex = 0; // Wrap around to first section
+            }
+    
+            // Show the corresponding section
+            showSection(sections[currentSectionIndex]);
+        }
+    
+        function updateButtonVisibility() {
+            // Show or hide Previous and Next buttons based on currentSectionIndex
+            if (currentSectionIndex === 0) {
+                document.getElementById('prevBtn').style.display = 'none';
+            } else {
+                document.getElementById('prevBtn').style.display = 'block';
+            }
+    
+            if (currentSectionIndex === sections.length - 1) {
+                document.getElementById('nextBtn').style.display = 'none';
+            } else {
+                document.getElementById('nextBtn').style.display = 'block';
+            }
+        }
+    
+        // Initialize with the first section visible
+        document.addEventListener('DOMContentLoaded', (event) => {
+            showSection('financial');
+            updateButtonVisibility(); // Initial button visibility setup
+        });
     </script>
 @endsection
