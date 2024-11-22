@@ -255,6 +255,30 @@ $(document).ready(function () {
             }
         });
     });
+    $(document).ready(function () {
+    // Function to calculate the Outlay
+    function calculateOutlay() {
+        // Get values from HOD Outlay and District Outlay fields
+        var hodOutlay = parseFloat($("#hod_outlay").val()) || 0; // Default to 0 if NaN
+        var districtOutlay = parseFloat($("#district_outlay").val()) || 0; // Default to 0 if NaN
+        
+        // Calculate the total Outlay
+        var totalOutlay = hodOutlay + districtOutlay;
+        
+        // Set the result in the Outlay field
+        $("#outlayHidden").val(totalOutlay.toFixed(2)); // Display result in hidden field
+        $("#outlay").val(totalOutlay.toFixed(2)); // Set value in hidden input field
+    }
+
+    // Event listener for changes in HOD Outlay or District Outlay fields
+    $("#hod_outlay, #district_outlay").on("input", function () {
+        calculateOutlay(); // Recalculate whenever values change
+    });
+
+    // Optionally, call calculateOutlay initially to ensure the Outlay field is updated if there are any pre-filled values
+    calculateOutlay();
+});
+
 
     // Handle change event for Majorhead dropdown
     $("#majorhead_id").change(function () {

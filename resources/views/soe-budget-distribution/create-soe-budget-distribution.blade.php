@@ -31,8 +31,12 @@ input[type=number] {
         background-color: #f2f2f2;
     }
     .btn-container {
-        text-align: right;
+        /* text-align: right; */
         margin-top: 10px;
+    }
+    .btn-cntnr-inner {
+    display: flex;
+    justify-content: space-between;
     }
     .btn-container button {
         margin-left: 10px;
@@ -331,12 +335,14 @@ input[type=number] {
                                 
                                             <!-- Previous and Next buttons -->
                                             <div class="btn-container table-nxt-prv" id="table-nxt-prv">
+                                                <div class="btn-cntnr-inner">
                                                 <div>
                                                     <button type="button" class="btn btn-success" id="prevBtn" onclick="navigateSection(-1)" style="display: none;">Previous</button>
                                                 </div>
                                                 <div>
                                                     <button type="button" class="btn btn-success" id="nextBtn" onclick="navigateSection(1)">Next</button>
                                                 </div>
+                                            </div>     
                                             </div>
                                         </div>
                                     </div>
