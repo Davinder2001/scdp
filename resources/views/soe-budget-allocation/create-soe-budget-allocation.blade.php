@@ -216,84 +216,122 @@
 @endsection
 @section('scripts')
     <script type="text/javascript">
+$(document).ready(function () {
+    // Initially disable the service select box
+    $("#service_id").attr('disabled', 'disabled');
 
-        $('document').ready(function(){
-            $("#service_id").attr('disabled','disabled');
-        });
+    // Reset the dropdown and automatically select the first valid option
+    function resetAndSelectFirst(dropdown) {
+        dropdown.html('<option value="">---Select---</option>');
+        dropdown.val(dropdown.find('option:not([value=""])').first().val());
+    }
 
-        $("#department_id").change(function() {
-            var department_sector_id = $(this).val();
-            $.ajax({
-                url: "{{ route('get_allocation_majorhead_by_department') }}?department_id=" + $(this)
-                    .val(),
-                method: 'GET',
-                success: function(data) {
-                    $('#majorhead_id').html(data.majorheadHtml);
-                    $('#scheme_id').html(data.schemeHtml);
-                    $('#soe_id').html(data.soeHtml);
-                    $('#department_sector_id').val(department_sector_id);
-                    $("#service_id").removeAttr('disabled');
-                }
-            });
-        });
-        $("#majorhead_id").change(function() {
-            $.ajax({
-                url: "{{ route('get_allocation_scheme_by_majorhead') }}?majorhead_id=" + $(this).val(),
-                method: 'GET',
-                success: function(data) {
-                    $('#scheme_id').html(data.schemeHtml);
-                    $('#soe_id').html(data.soeHtml);
-                }
-            });
-        });
-        $("#scheme_id").change(function() {
-            $.ajax({
-                url: "{{ route('get_allocation_soe_by_scheme') }}?scheme_id=" + $(this).val(),
-                method: 'GET',
-                success: function(data) {
-                    $('#soe_id').html(data.soeHtml);
-                }
-            });
-        });
-        $("#service_id").change(function() {
-            $.ajax({
-                url: "{{ route('get_allocation_sector_by_service') }}",
-                method: 'GET',
-                data: { 
-                    service_id: $(this).val(), 
-                    department_id: $('#department_sector_id').val() 
-                },
-                success: function(data) {
-                    $('#sector_id').html(data.sectorhtml);
-                    $('#subsector_id').html(data.subsectorhtml);
-                }
-            });
-        })
-        $("#sector_id").change(function() {
-            $.ajax({
-                url: "{{ route('get_allocation_subsector_by_sector') }}?sector_id=" + $(this).val(),
-                method: 'GET',
-                success: function(data) {
-                    $('#subsector_id').html(data.subsectorhtml);
-                }
-            });
-        });
+    // Handle change event for Department dropdown
+    $("#department_id").change(function () {
+        var department_id = $(this).val();
 
-        $('#hod_outlay').on('keyup', function(e) {
-            let hodOutlay = e.target.value > 0 ? parseInt(e.target.value) : parseInt($('#district_outlay').val());
-            var districtOutlay = $('#district_outlay').val() > 0 ? parseInt($('#district_outlay').val()) : 0;
-            hodOutlay = $('#hod_outlay').val() > 0 ? parseInt($('#hod_outlay').val()) : 0;
-            let totalOutlay = parseInt(districtOutlay) + parseInt(hodOutlay)
-            $('#outlay').val(totalOutlay);
-            $('#outlayHidden').val(totalOutlay);
+        // Make an AJAX call to fetch Majorhead options
+        $.ajax({
+            url: "{{ route('get_allocation_majorhead_by_department') }}?department_id=" + department_id,
+            method: 'GET',
+            success: function (data) {
+                var majorheadDropdown = $('#majorhead_id');
+                if (data.majorheadHtml.trim() === '') {
+                    resetAndSelectFirst(majorheadDropdown);
+                } else {
+                    majorheadDropdown.html(data.majorheadHtml);
+                    majorheadDropdown.val(majorheadDropdown.find('option:not([value=""])').first().val());
+                }
+
+                // Clear and reset dependent dropdowns (Scheme and SOE)
+                resetAndSelectFirst($('#scheme_id'));
+                resetAndSelectFirst($('#soe_id'));
+
+                // Enable the service select box
+                $("#service_id").removeAttr('disabled');
+
+                // Trigger the change event for Majorhead to continue the chain
+                majorheadDropdown.change();
+            }
         });
-        $('#district_outlay').on('keyup', function(e) {
-            let districtOutlay = e.target.value > 0 ? parseInt(e.target.value) : parseInt($('#hod_outlay').val());;
-            var hodOutlay = $('#hod_outlay').val() > 0 ? parseInt($('#hod_outlay').val()) : 0;
-            districtOutlay = $('#district_outlay').val() > 0 ? parseInt($('#district_outlay').val()) : 0;
-            let totalOutlay = parseInt(districtOutlay) + parseInt(hodOutlay)
-            $('#outlay').val(totalOutlay);
-            $('#outlayHidden').val(totalOutlay);
+    });
+
+    // Handle change event for Majorhead dropdown
+    $("#majorhead_id").change(function () {
+        var majorhead_id = $(this).val();
+
+        // Fetch Scheme options
+        $.ajax({
+            url: "{{ route('get_allocation_scheme_by_majorhead') }}?majorhead_id=" + majorhead_id,
+            method: 'GET',
+            success: function (data) {
+                var schemeDropdown = $('#scheme_id');
+                if (data.schemeHtml.trim() === '') {
+                    resetAndSelectFirst(schemeDropdown);
+                } else {
+                    schemeDropdown.html(data.schemeHtml);
+                    schemeDropdown.val(schemeDropdown.find('option:not([value=""])').first().val());
+                }
+
+                // Reset SOE dropdown
+                resetAndSelectFirst($('#soe_id'));
+
+                // Trigger the change event for Scheme to continue the chain
+                schemeDropdown.change();
+            }
         });
+    });
+
+    // Handle change event for Scheme dropdown
+    $("#scheme_id").change(function () {
+        var scheme_id = $(this).val();
+
+        // Fetch SOE options
+        $.ajax({
+            url: "{{ route('get_allocation_soe_by_scheme') }}?scheme_id=" + scheme_id,
+            method: 'GET',
+            success: function (data) {
+                var soeDropdown = $('#soe_id');
+                if (data.soeHtml.trim() === '') {
+                    resetAndSelectFirst(soeDropdown);
+                } else {
+                    soeDropdown.html(data.soeHtml);
+                    soeDropdown.val(soeDropdown.find('option:not([value=""])').first().val());
+                }
+            }
+        });
+    });
+
+    // Handle change event for Service dropdown
+    $("#service_id").change(function () {
+        $.ajax({
+            url: "{{ route('get_allocation_sector_by_service') }}",
+            method: 'GET',
+            data: {
+                service_id: $(this).val(),
+                department_id: $('#department_id').val() // Pass the department ID to fetch sector data
+            },
+            success: function (data) {
+                $('#sector_id').html(data.sectorhtml);
+                $('#subsector_id').html(data.subsectorhtml);
+            }
+        });
+    });
+
+    // Handle change event for Sector dropdown
+    $("#sector_id").change(function () {
+        $.ajax({
+            url: "{{ route('get_allocation_subsector_by_sector') }}?sector_id=" + $(this).val(),
+            method: 'GET',
+            success: function (data) {
+                $('#subsector_id').html(data.subsectorhtml);
+            }
+        });
+    });
+
+    // Automatically trigger department change on page load to apply changes
+    $("#department_id").change();
+});
+
     </script>
 @endsection

@@ -220,27 +220,6 @@ input[type=number] {
                                     <div class="col-lg-12">
                                         <div class="form-group table-responsive">
                                              <table class="table table-bordered" name="district_outlay_tbl" id="district_outlay_tbl">
-                                                {{-- <thead>
-                                                    <tr class="ms-table-heading">
-                                                        <th rowspan="2">District</th>
-                                                        <th colspan="3" class="financial">Financial</th>
-                                                        <th colspan="5" class="physical">Physical Achievement</th>
-                                                        <th colspan="3" class="beneficiaries">Beneficiaries</th>
-                                                    </tr>
-                                                    <tr class="ms-table-heading">
-                                                        <th class="financial">Outlay</th>
-                                                        <th class="financial">Expenditure</th>
-                                                        <th class="financial">Percentage (%)</th>
-                                                        <th class="physical">Item Name</th>
-                                                        <th class="physical">Unit Of Measure</th>
-                                                        <th class="physical">Unit</th>
-                                                        <th class="physical">Achievement</th>
-                                                        <th class="physical">Percentage (%)</th>
-                                                        <th class="beneficiaries">Total</th>
-                                                        <th class="beneficiaries">Women (Out of Total)</th>
-                                                        <th class="beneficiaries">Disable (Out of total)</th>
-                                                    </tr>
-                                                </thead> --}}
                                                 <thead>
                                                     <tr class="ms-table-heading">
                                                         <th rowspan="2">District</th>
@@ -1004,5 +983,23 @@ input[type=number] {
             showSection('financial');
             updateButtonVisibility(); // Initial button visibility setup
         });
+
+
+
+        // Expandature cannot be more then outlay 
+        document.querySelectorAll('.expenditure').forEach(input => {
+        input.addEventListener('input', function () {
+            const districtId = this.dataset.id;
+            const outlayInput = document.querySelector(`#outlay${districtId}`);
+            const outlayValue = parseFloat(outlayInput.value) || 0;
+            const expenditureValue = parseFloat(this.value) || 0;
+
+            if (expenditureValue > outlayValue) {
+                alert(`Expenditure cannot exceed the outlay of ${outlayValue}`);
+                this.value = '';
+            }
+        });
+    });
+
     </script>
 @endsection
